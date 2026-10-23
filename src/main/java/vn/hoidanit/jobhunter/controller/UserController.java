@@ -26,14 +26,14 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/user/create")
-    public String getMethodName() {
-        User user = new User();
-        user.setEmail("Duongptit@gmail.com");
-        user.setName("Duong");
-        user.setPassword("123456");
-        this.userService.handleCreateUser(user);
-        return "";
+    @PostMapping("/user/create")
+    public User getCreateUser(@RequestBody User user) {
+        // User user = new User();
+        // user.setEmail("Duongptit@gmail.com");
+        // user.setName("Duong");
+        // user.setPassword("123456");
+        User user1 = this.userService.handleCreateUser(user);
+        return user1;
     }
 
     // @PostMapping("/users")

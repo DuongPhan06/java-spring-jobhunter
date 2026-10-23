@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import vn.hoidanit.jobhunter.domain.RestResponse;
 
-@ControllerAdvice
+// @ControllerAdvice
 public class FormatRestResponse implements ResponseBodyAdvice<Object> {
 
     @Override
