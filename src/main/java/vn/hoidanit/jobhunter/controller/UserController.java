@@ -26,14 +26,16 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/user/create")
+    @PostMapping("/user")
     public User getCreateUser(@RequestBody User user) {
-        // User user = new User();
-        // user.setEmail("Duongptit@gmail.com");
-        // user.setName("Duong");
-        // user.setPassword("123456");
         User user1 = this.userService.handleCreateUser(user);
         return user1;
+    }
+
+    @DeleteMapping("/user/{id}")
+    public String getDeleteUser(@PathVariable long id) {
+        this.userService.handleDeleteUser(id);
+        return "Delete User";
     }
 
     // @PostMapping("/users")
