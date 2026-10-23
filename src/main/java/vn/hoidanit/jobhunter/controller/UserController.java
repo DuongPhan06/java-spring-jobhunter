@@ -39,8 +39,14 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public User getAllUser(@PathVariable long id) {
+    public User FetchUserbyId(@PathVariable long id) {
         User user = this.userService.fetchUserById(id);
+        return user;
+    }
+
+    @GetMapping("/user")
+    public List<User> FetchAllUser() {
+        List<User> user = this.userService.fetchAllUser();
         return user;
     }
 
