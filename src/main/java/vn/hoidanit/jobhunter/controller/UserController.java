@@ -38,6 +38,12 @@ public class UserController {
         return "Delete User";
     }
 
+    @GetMapping("/user/{id}")
+    public User getAllUser(@PathVariable long id) {
+        User user = this.userService.fetchUserById(id);
+        return user;
+    }
+
     // @PostMapping("/users")
     // public ResponseEntity<User> createNewUser(@RequestBody User postManUser) {
     // User ericUser = this.userService.handleCreateUser(postManUser);
