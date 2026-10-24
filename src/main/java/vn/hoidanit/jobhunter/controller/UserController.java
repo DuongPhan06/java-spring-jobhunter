@@ -50,6 +50,13 @@ public class UserController {
         return user;
     }
 
+    @PutMapping("/user")
+    public User getUpdateUser(@RequestBody User user) {
+        User new_user = this.userService.handleUpdateUser(user);
+        return new_user;
+    }
+
+
     // @PostMapping("/users")
     // public ResponseEntity<User> createNewUser(@RequestBody User postManUser) {
     // User ericUser = this.userService.handleCreateUser(postManUser);
