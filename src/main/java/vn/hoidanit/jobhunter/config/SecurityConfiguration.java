@@ -50,6 +50,7 @@ public class SecurityConfiguration {
                         authz -> authz
                                 .requestMatchers("/").permitAll()
                                 .anyRequest().authenticated())
+                .formLogin(f -> f.permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
