@@ -29,6 +29,7 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        System.out.println(">>> SECURITY CONFIGURATION LOADED <<<");
         // String[] whiteList = {
         // "/",
         // "/api/v1/auth/login",
@@ -46,11 +47,12 @@ public class SecurityConfiguration {
         // };
 
         http
+                .csrf(c -> c.disable())
                 .authorizeHttpRequests(
                         authz -> authz
                                 .requestMatchers("/").permitAll()
-                                .anyRequest().authenticated())
-                .formLogin(f -> f.permitAll())
+                                .anyRequest().permitAll())
+                .formLogin(f -> f.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
