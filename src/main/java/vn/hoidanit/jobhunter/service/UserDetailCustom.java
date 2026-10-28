@@ -22,8 +22,12 @@ public class UserDetailCustom implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         User user = this.userService.getUserbyUserName(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("User/password không hợp lệ");
+        }
 
-        return new org.springframework.security.core.userdetails.User(user.getName(), user.getPassword(), Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+        return new org.springframework.security.core.userdetails.User(user.getName(), user.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
     }
-    
+
 }
