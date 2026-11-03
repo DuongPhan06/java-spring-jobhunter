@@ -1,5 +1,6 @@
 package vn.hoidanit.jobhunter.util.error;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,11 @@ public class GlobalException {
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError(ex.getBody().getDetail());
 
-        List<String> errors = fieldErrors.stream().map(f -> f.getDefaultMessage()).collect(Collectors.toList());
+        List<String> errors = new ArrayList<>();
+
+        for (FieldError f : fieldErrors) {
+            errors.add(f.getDefaultMessage());
+        }
         res.setMessage(errors.size() > 1 ? errors : errors.get(0));
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
