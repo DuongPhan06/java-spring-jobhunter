@@ -33,10 +33,8 @@ public class SecurityConfiguration {
     private String jwtExpiration;
 
     private UserService userService;
-    private SecurityUtil securityUtil;
 
-    public SecurityConfiguration(UserService userService, SecurityUtil securityUtil) {
-        this.securityUtil = securityUtil;
+    public SecurityConfiguration(UserService userService) {
         this.userService = userService;
     }
 
