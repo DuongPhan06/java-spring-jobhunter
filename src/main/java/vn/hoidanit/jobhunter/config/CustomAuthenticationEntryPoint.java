@@ -42,6 +42,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         res.setError(errorMessage);
         res.setMessage("Token is invalid (expired, not in the correct format, or does not transmit JWT in the header)...");
 
-        mapper.writeValue(response.getWriter(), res);
+        objectMapper.writeValue(response.getWriter(), res);
     }
 }
