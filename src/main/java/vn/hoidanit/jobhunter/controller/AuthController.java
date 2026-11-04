@@ -21,7 +21,6 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityUtil securityUtil;
 
-
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
@@ -30,19 +29,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<RestLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         // Nạp username/password vào Spring Security
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDTO.getUserName(), loginDTO.getPassword());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                loginDTO.getUserName(), loginDTO.getPassword());
 
         // Xác thực người dùng
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
         // Lưu thông tin xác thực vào SecurityContext
-        
-        
-        // SecurityContextHolder.getContext().setAuthentication(authentication);
-        
-        
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         // create a token
-        
         String access_token = this.securityUtil.CreateToken(authentication);
         RestLoginDTO res = new RestLoginDTO();
         res.setAccess_token(access_token);
