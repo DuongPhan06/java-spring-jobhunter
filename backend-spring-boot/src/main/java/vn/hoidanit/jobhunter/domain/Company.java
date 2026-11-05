@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -110,6 +111,14 @@ public class Company {
 
     public void setUpdateBy(String updateBy) {
         this.updateBy = updateBy;
+    }
+
+    @PrePersist
+    public void handleBeforeCreate() {
+
+        this.createBy = "Duong Phan";
+        this.createdAt = Instant.now();
+        this.updateAt = Instant.now();
     }
 
 }
