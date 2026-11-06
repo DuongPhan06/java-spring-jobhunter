@@ -1,7 +1,10 @@
 package vn.hoidanit.jobhunter.controller;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.hoidanit.jobhunter.domain.User;
+import vn.hoidanit.jobhunter.domain.DTO.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.error.IdInvalidException;
 
@@ -54,9 +58,18 @@ public class UserController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<User>> FetchAllUser() {
-        List<User> user = this.userService.fetchAllUser();
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+    public ResponseEntity<ResultPaginationDTO> FetchAllUser(
+            @RequestParam("current") Optional<String> currentOptional,
+            @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+
+        String s_Current = currentOptional.isPresent() ? currentOptional.get() : "";
+        String s_pagesize = pageSizeOptional.isPresent() ? pageSizeOptional.get() : "";
+        int currentPage = Integer.parseInt(s_Current);
+        int currentSize = Integer.parseInt(s_pagesize);
+        Pageable pageable = PageRequest.of(currentPage - 1, currentSize);
+
+        ResultPaginationDTO resultPaginationDTO = this.userService.fetchAllUser(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(resultPaginationDTO);
     }
 
     @PutMapping("/user")
