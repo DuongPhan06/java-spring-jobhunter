@@ -4,11 +4,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.Company;
+import vn.hoidanit.jobhunter.domain.DTO.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.CompanyRepository;
 import vn.hoidanit.jobhunter.service.CompanyService;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,9 +39,20 @@ public class CompanyController {
     }
 
     @GetMapping("/companies")
-    public ResponseEntity<List<Company>> FetchAllCompanies() {
-        List<Company> companies = this.companyService.GetAllCompanies();
-        return ResponseEntity.status(HttpStatus.OK).body(companies);
+    public ResponseEntity<ResultPaginationDTO> FetchAllCompanies(
+            @RequestParam("current") Optional<String> currentOptional,
+            @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+
+        String currentPage = currentOptional.isPresent() ? currentOptional.get() : "";
+        String currentSize = pageSizeOptional.isPresent() ? pageSizeOptional.get() : "";
+
+        int page = Integer.parseInt(currentPage);
+        int size = Integer.parseInt(currentSize);
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+        ResultPaginationDTO resultPaginationDTO = this.companyService.GetAllCompanies(pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(resultPaginationDTO);
     }
 
     @GetMapping("/companies/{id}")
