@@ -39,6 +39,7 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // create a token
+        
         String access_token = this.securityUtil.CreateToken(authentication);
         RestLoginDTO res = new RestLoginDTO();
         res.setAccess_token(access_token);

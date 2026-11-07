@@ -40,7 +40,7 @@ public class UserService {
 
         Meta meta = new Meta();
         ResultPaginationDTO resultPaginationDTO = new ResultPaginationDTO();
-        meta.setPage(users.getNumber());
+        meta.setPage(users.getNumber() + 1);
         meta.setPageSize(users.getSize());
         meta.setTotalPages(users.getTotalPages());
         meta.setTotalElements(users.getTotalElements());
