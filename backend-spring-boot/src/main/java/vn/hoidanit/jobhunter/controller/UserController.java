@@ -23,6 +23,7 @@ import com.turkraft.springfilter.boot.Filter;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.DTO.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.UserService;
+import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 import vn.hoidanit.jobhunter.util.error.IdInvalidException;
 
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,10 +62,12 @@ public class UserController {
     }
 
     @GetMapping("/user")
+    @ApiMessage("Fetch all users")
     public ResponseEntity<ResultPaginationDTO> FetchAllUser(@Filter Specification<User> spec, Pageable pageable) {
 
         // String s_Current = currentOptional.isPresent() ? currentOptional.get() : "";
-        // String s_pagesize = pageSizeOptional.isPresent() ? pageSizeOptional.get() : "";
+        // String s_pagesize = pageSizeOptional.isPresent() ? pageSizeOptional.get() :
+        // "";
         // int currentPage = Integer.parseInt(s_Current);
         // int currentSize = Integer.parseInt(s_pagesize);
         // Pageable pageable = PageRequest.of(currentPage - 1, currentSize);

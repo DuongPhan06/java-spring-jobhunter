@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletResponse;
 import vn.hoidanit.jobhunter.domain.RestResponse;
+import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 
 @ControllerAdvice
 public class FormatRestResponse implements ResponseBodyAdvice<Object> {
@@ -43,12 +44,11 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
             // restResponse.setMessage(body);
             return body;
 
-        }
-        else {
+        } else {
             // case success
             restResponse.setData(body);
-            restResponse.setMessage("Call API Success");
-
+            ApiMessage apiMessage = returnType.getMethodAnnotation(ApiMessage.class);
+            restResponse.setMessage(apiMessage != null ? apiMessage.value() : "CALL API SUCCESS");
         }
 
         return restResponse;
