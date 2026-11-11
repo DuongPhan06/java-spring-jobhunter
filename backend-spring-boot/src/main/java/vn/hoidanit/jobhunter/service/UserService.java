@@ -6,7 +6,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.DTO.Meta;
+import vn.hoidanit.jobhunter.domain.DTO.ResUserDTO;
 import vn.hoidanit.jobhunter.domain.DTO.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.DTO.UpdateUserResponseDTO;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 
 import java.util.List;
@@ -55,9 +57,10 @@ public class UserService {
     public User handleUpdateUser(User reqUser) {
         User currentUser = this.fetchUserById(reqUser.getId());
         if (currentUser != null) {
-            currentUser.setEmail(reqUser.getEmail());
+            currentUser.setAddress(reqUser.getAddress());
+            currentUser.setGender(reqUser.getGender());
+            currentUser.setAge(reqUser.getAge());
             currentUser.setName(reqUser.getName());
-            currentUser.setPassword(reqUser.getPassword());
             // update
             currentUser = this.userRepository.save(currentUser);
         }
@@ -66,6 +69,38 @@ public class UserService {
 
     public User getUserbyUserName(String username) {
         return this.userRepository.findByEmail(username);
+    }
+
+    public boolean CheckExistsEmail(String email) {
+        return this.userRepository.existsByEmail(email);
+    }
+
+    public boolean CheckExistsID(long id) {
+        return this.userRepository.existsById(id);
+    }
+
+    public UpdateUserResponseDTO GetConvert(User updatedUser) {
+        UpdateUserResponseDTO updateUserResponseDTO = new UpdateUserResponseDTO();
+        updateUserResponseDTO.setAge(updatedUser.getAge());
+        updateUserResponseDTO.setId(updatedUser.getId());
+        updateUserResponseDTO.setName(updatedUser.getName());
+        updateUserResponseDTO.setGender(updatedUser.getGender());
+        updateUserResponseDTO.setUpdatedAt(updatedUser.getUpdatedAt());
+        updateUserResponseDTO.setAddress(updatedUser.getAddress());
+        return updateUserResponseDTO;
+    }
+
+    public ResUserDTO convertToResUserDTO(User user) {
+        ResUserDTO res = new ResUserDTO();
+        res.setId(user.getId());
+        res.setEmail(user.getEmail());
+        res.setName(user.getName());
+        res.setAge(user.getAge());
+        res.setUpdatedAt(user.getUpdatedAt());
+        res.setCreatedAt(user.getCreatedAt());
+        res.setGender(user.getGender());
+        res.setAddress(user.getAddress());
+        return res;
     }
 
 }

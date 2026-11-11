@@ -71,4 +71,5 @@ public class CompanyService {
     public void HandleDeleteCompany(long id) {
         this.companyRepository.deleteById(id);
     }
+    
 }

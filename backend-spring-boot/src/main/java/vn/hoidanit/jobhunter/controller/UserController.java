@@ -19,10 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mysql.cj.jdbc.result.UpdatableResultSet;
 import com.turkraft.springfilter.boot.Filter;
 
 import vn.hoidanit.jobhunter.domain.User;
+import vn.hoidanit.jobhunter.domain.DTO.ResUserDTO;
 import vn.hoidanit.jobhunter.domain.DTO.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.DTO.UpdateUserResponseDTO;
+import vn.hoidanit.jobhunter.domain.DTO.UserResponseDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 import vn.hoidanit.jobhunter.util.error.IdInvalidException;
@@ -42,11 +46,28 @@ public class UserController {
 
     @ApiMessage("Create a user successfully")
     @PostMapping("/user")
-    public ResponseEntity<User> getCreateUser(@RequestBody User user) {
+    public ResponseEntity<UserResponseDTO> getCreateUser(@RequestBody User user) throws IdInvalidException {
         String hashPassword = this.passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassword);
+
+        // kiểm tra có trùng email
+        if (this.userService.CheckExistsEmail(user.getEmail())) {
+            throw new IdInvalidException("Email " + user.getEmail() + "đã tồn tại, vui lòng thử email khác");
+        }
+
+        // Lưu người dùng
         User user1 = this.userService.handleCreateUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user1);
+
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setId(user1.getId());
+        userResponseDTO.setName(user1.getName());
+        userResponseDTO.setGender(user1.getGender());
+        userResponseDTO.setEmail(user1.getEmail());
+        userResponseDTO.setAddress(user1.getAddress());
+        userResponseDTO.setAge(user1.getAge());
+        userResponseDTO.setCreatedAt(user1.getCreatedAt());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userResponseDTO);
     }
 
     @DeleteMapping("/user/{id}")
@@ -59,9 +80,14 @@ public class UserController {
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<User> FetchUserbyId(@PathVariable long id) {
+    @ApiMessage("Fetch User By Id")
+    public ResponseEntity<ResUserDTO> FetchUserbyId(@PathVariable long id) throws IdInvalidException {
         User user = this.userService.fetchUserById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+        if (user == null) {
+            throw new IdInvalidException("User trên không tồn tại, vui lòng lấy User khác !" );
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(this.userService.convertToResUserDTO(user));
     }
 
     @GetMapping("/user")
@@ -80,49 +106,11 @@ public class UserController {
     }
 
     @PutMapping("/user")
-    public ResponseEntity<User> getUpdateUser(@RequestBody User user) {
+    public ResponseEntity<UpdateUserResponseDTO> getUpdateUser(@RequestBody User user) throws IdInvalidException {
         User new_user = this.userService.handleUpdateUser(user);
-        return ResponseEntity.status(HttpStatus.OK).body(new_user);
+        if (new_user == null) {
+            throw new IdInvalidException("Id " + user.getId() + " Không tồn tại");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(this.userService.GetConvert(new_user));
     }
-
-    // @PostMapping("/users")
-    // public ResponseEntity<User> createNewUser(@RequestBody User postManUser) {
-    // User ericUser = this.userService.handleCreateUser(postManUser);
-    // return ResponseEntity.status(HttpStatus.CREATED).body(ericUser);
-    // }
-
-    // @DeleteMapping("/users/{id}")
-    // public ResponseEntity<String> deleteUser(@PathVariable("id") long id)
-    // throws IdInvalidException {
-    // if (id >= 1500) {
-    // throw new IdInvalidException("Id khong lon hown 1501");
-    // }
-
-    // this.userService.handleDeleteUser(id);
-    // return ResponseEntity.ok("ericUser");
-    // // return ResponseEntity.status(HttpStatus.OK).body("ericUser");
-    // }
-
-    // // fetch user by id
-    // @GetMapping("/users/{id}")
-    // public ResponseEntity<User> getUserById(@PathVariable("id") long id) {
-    // User fetchUser = this.userService.fetchUserById(id);
-    // // return ResponseEntity.ok(fetchUser);
-    // return ResponseEntity.status(HttpStatus.OK).body(fetchUser);
-    // }
-
-    // // fetch all users
-    // @GetMapping("/users")
-    // public ResponseEntity<List<User>> getAllUser() {
-    // // return ResponseEntity.ok(this.userService.fetchAllUser());
-    // return
-    // ResponseEntity.status(HttpStatus.OK).body(this.userService.fetchAllUser());
-    // }
-
-    // @PutMapping("/users")
-    // public ResponseEntity<User> updateUser(@RequestBody User user) {
-    // User ericUser = this.userService.handleUpdateUser(user);
-    // return ResponseEntity.ok(ericUser);
-    // }
-
 }
