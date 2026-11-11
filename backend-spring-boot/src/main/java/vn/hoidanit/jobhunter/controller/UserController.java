@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.turkraft.springfilter.boot.Filter;
@@ -29,6 +30,7 @@ import vn.hoidanit.jobhunter.util.error.IdInvalidException;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
+@RequestMapping("/api/v1")
 public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -38,6 +40,7 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @ApiMessage("Create a user successfully")
     @PostMapping("/user")
     public ResponseEntity<User> getCreateUser(@RequestBody User user) {
         String hashPassword = this.passwordEncoder.encode(user.getPassword());
