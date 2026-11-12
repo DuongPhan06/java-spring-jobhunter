@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mysql.cj.jdbc.result.UpdatableResultSet;
 import com.turkraft.springfilter.boot.Filter;
 
 import vn.hoidanit.jobhunter.domain.User;
@@ -71,12 +70,14 @@ public class UserController {
     }
 
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<String> getDeleteUser(@PathVariable long id) throws IdInvalidException {
-        if (id > 1500) {
-            throw new IdInvalidException("Id khong lon hon 1500");
+    @ApiMessage("Delete User Success")
+    public ResponseEntity<Void> getDeleteUser(@PathVariable long id) throws IdInvalidException {
+        User user = this.userService.fetchUserById(id);
+        if (user == null) {
+            throw new IdInvalidException("User với id " + id + " không tồn tại!");
         }
         this.userService.handleDeleteUser(id);
-        return ResponseEntity.status(HttpStatus.OK).body("Delete User Sucessfully");
+        return ResponseEntity.status(HttpStatus.OK).body(null);
     }
 
     @GetMapping("/user/{id}")
@@ -84,7 +85,7 @@ public class UserController {
     public ResponseEntity<ResUserDTO> FetchUserbyId(@PathVariable long id) throws IdInvalidException {
         User user = this.userService.fetchUserById(id);
         if (user == null) {
-            throw new IdInvalidException("User trên không tồn tại, vui lòng lấy User khác !" );
+            throw new IdInvalidException("User trên không tồn tại, vui lòng lấy User khác !");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(this.userService.convertToResUserDTO(user));

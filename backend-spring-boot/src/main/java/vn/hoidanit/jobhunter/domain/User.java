@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
@@ -30,7 +31,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    @NotBlank(message = "Email không được để trống !")
     private String email;
+
+    @NotBlank(message = "password không được để trống !")
     private String password;
 
     private int age;

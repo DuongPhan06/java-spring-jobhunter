@@ -13,6 +13,8 @@ import vn.hoidanit.jobhunter.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -26,8 +28,10 @@ public class UserService {
         return this.userRepository.save(user);
     }
 
-    public void handleDeleteUser(long id) {
-        this.userRepository.deleteById(id);
+    public void handleDeleteUser(Long id) {
+        if (id != null) {
+            this.userRepository.deleteById(id);
+        }
     }
 
     public User fetchUserById(long id) {
@@ -50,7 +54,21 @@ public class UserService {
         meta.setTotalElements(usersPage.getTotalElements());
 
         resultPaginationDTO.setMeta(meta);
-        resultPaginationDTO.setResult(usersPage.getContent());
+        // resultPaginationDTO.setResult(usersPage.getContent());
+        List<ResUserDTO> listUser = usersPage.getContent()
+                .stream()
+                .map(item -> new ResUserDTO(
+                        item.getId(),
+                        item.getName(),
+                        item.getEmail(),
+                        item.getGender(),
+                        item.getAddress(),
+                        item.getAge(),
+                        item.getCreatedAt(),
+                        item.getUpdatedAt()))
+                .collect(Collectors.toList());
+
+        resultPaginationDTO.setResult(listUser);
         return resultPaginationDTO;
     }
 
