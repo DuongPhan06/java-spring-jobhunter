@@ -1,5 +1,8 @@
 package vn.hoidanit.jobhunter.controller;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,6 +28,9 @@ public class AuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityUtil securityUtil;
     private final UserService userService;
+
+    @Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
+    private long refreshTokenExpiration;
 
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil,
             UserService userService) {
@@ -55,12 +61,26 @@ public class AuthController {
                     resUserLogin.getName());
             res.setUserLogin(userLogin);
         }
-        //Create Access Token
+        // Create Access Token
         res.setAccess_token(access_token);
 
-        //Create Refresh Token
+        // Create Refresh Token
         String refresh_token = this.securityUtil.CreateRefreshToken(loginDTO.getUserName(), res);
-        return ResponseEntity.ok().body(res);
+
+        ResponseCookie resCookies = ResponseCookie
+                .from("refresh_token", refresh_token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(refreshTokenExpiration)
+                .build();
+
+        // Update User
+        this.userService.UpdateUserToken(loginDTO.getUserName(), refresh_token);
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.SET_COOKIE, resCookies.toString())
+                .body(res);
     }
 
 }
