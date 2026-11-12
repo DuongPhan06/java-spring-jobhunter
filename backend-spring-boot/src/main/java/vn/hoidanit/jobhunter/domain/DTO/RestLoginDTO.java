@@ -1,24 +1,26 @@
 package vn.hoidanit.jobhunter.domain.DTO;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+// @AllArgsConstructor
+// @NoArgsConstructor
 public class RestLoginDTO {
     private String access_token;
+    private UserLogin userLogin;
 
-    public RestLoginDTO(String access_token) {
-        this.access_token = access_token;
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserLogin {
+        private long id;
+        private String email;
+        private String name;
     }
-
-    public RestLoginDTO() {
-        //TODO Auto-generated constructor stub
-    }
-
-    public String getAccess_token() {
-        return access_token;
-    }
-
-    public void setAccess_token(String access_token) {
-        this.access_token = access_token;
-    }
-
 
 }
