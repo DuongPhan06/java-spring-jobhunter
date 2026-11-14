@@ -20,6 +20,7 @@ import vn.hoidanit.jobhunter.domain.DTO.RestLoginDTO.UserLogin;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
+import vn.hoidanit.jobhunter.util.error.IdInvalidException;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,7 +69,7 @@ public class AuthController {
         }
         // Create Access Token
 
-        String access_token = this.securityUtil.CreateAccessToken(authentication, res.getUserLogin());
+        String access_token = this.securityUtil.CreateAccessToken(loginDTO.getUserName(), res.getUserLogin());
         res.setAccess_token(access_token);
 
         // Create Refresh Token
@@ -107,13 +108,51 @@ public class AuthController {
 
     @GetMapping("/auth/refresh")
     @ApiMessage("Get Refresh Token Successful")
-    public ResponseEntity<String> getRefreshToken(
-            @CookieValue(name = "refresh_token") String refreshToken) {
+    public ResponseEntity<RestLoginDTO> getRefreshToken(
+            @CookieValue(name = "refresh_token", defaultValue = "Duong_phan") String refreshToken) throws IdInvalidException {
         org.springframework.security.oauth2.jwt.Jwt decoded_token = this.securityUtil
                 .checkValidRefreshToken(refreshToken);
+            if (refreshToken.equals("Duong_phan")) {
+                throw new IdInvalidException("Bạn không có refresh_token ở cookies");
+            }
         String email = decoded_token.getSubject();
 
-        return ResponseEntity.ok().body(email);
+        User currentUser = this.userService.getUserByRefreshtokenAndEmail(refreshToken, email);
+        if (currentUser == null) {
+            throw new IdInvalidException("Refresh_Token không hợp lệ !");
+        }
+
+        RestLoginDTO res = new RestLoginDTO();
+
+        User resUserLogin = this.userService.getUserbyUserName(email);
+        if (resUserLogin != null) {
+            RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin(resUserLogin.getId(), resUserLogin.getEmail(),
+                    resUserLogin.getName());
+            res.setUserLogin(userLogin);
+        }
+        // Create Access Token
+
+        String access_token = this.securityUtil.CreateAccessToken(email, res.getUserLogin());
+        res.setAccess_token(access_token);
+
+        // Create Refresh Token
+        String refresh_token = this.securityUtil.CreateRefreshToken(email, res);
+
+        ResponseCookie resCookies = ResponseCookie
+                .from("refresh_token", refresh_token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(refreshTokenExpiration)
+                .build();
+
+        // Update User
+        this.userService.UpdateUserToken(email, refresh_token);
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.SET_COOKIE, resCookies.toString())
+                .body(res);
+
     }
 
 }
