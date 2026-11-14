@@ -1,6 +1,7 @@
 package vn.hoidanit.jobhunter.controller;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -101,6 +103,17 @@ public class AuthController {
         }
 
         return ResponseEntity.ok().body(userLogin);
+    }
+
+    @GetMapping("/auth/refresh")
+    @ApiMessage("Get Refresh Token Successful")
+    public ResponseEntity<String> getRefreshToken(
+            @CookieValue(name = "refresh_token") String refreshToken) {
+        org.springframework.security.oauth2.jwt.Jwt decoded_token = this.securityUtil
+                .checkValidRefreshToken(refreshToken);
+        String email = decoded_token.getSubject();
+
+        return ResponseEntity.ok().body(email);
     }
 
 }
